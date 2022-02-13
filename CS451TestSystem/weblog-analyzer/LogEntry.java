@@ -1,4 +1,4 @@
-package weblog
+package weblog;
 
 import java.util.Calendar;
 
