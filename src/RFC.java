@@ -21,19 +21,19 @@ public class RFC extends VoidVisitorAdapter{
     // this is a separate class because of the getMethodCall and getMethodDec methods
     private static class MethodVisitor extends VoidVisitorAdapter {
         // the number of methods in a class
-        int methodDec = 1;
+        int methodDec = 0;
 
         // return number of methods in a class
         public int getMethodDec(){
-            return methodDec-1;
+            return methodDec;
         }
 
         // the number of method calls in a class
-        int methodCall = 1;
+        int methodCall = 0;
 
         // return number of method calls in a class
         public int getMethodCall(){
-            return methodCall-1;
+            return methodCall;
         }
 
         // visit each of the nodes in the tree

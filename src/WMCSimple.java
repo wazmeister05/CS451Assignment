@@ -20,11 +20,11 @@ public class WMCSimple extends VoidVisitorAdapter{
     // separate class because of the getMethodCount method to return number of methods in class
     private static class MethodVisitor extends VoidVisitorAdapter {
         // number of methods in class
-        int methodCount = 1;
+        int methodCount = 0;
 
         // return it
         public int getMethodCount(){
-            return methodCount -1;
+            return methodCount;
         }
 
         // visit the node

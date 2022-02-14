@@ -3,6 +3,7 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
@@ -18,13 +19,15 @@ public class WMCComplex extends VoidVisitorAdapter{
     }
 
     // separate class because of the getMethodCount method to return number of methods in class
+    // this differs from the WMCSimple implementation
     private static class MethodVisitor extends VoidVisitorAdapter {
         // number of methods in class
-        int methodCount = 1;
+        int methodCount = 0;
+        int branchCount = 0;
 
         // return it
         public int getMethodCount(){
-            return methodCount -1;
+            return methodCount;
         }
 
         // visit the node
@@ -33,8 +36,14 @@ public class WMCComplex extends VoidVisitorAdapter{
             methodCount++;
         }
 
+        public void visit(ExpressionStmt n, Object arg){
+            if(n.isIfStmt()){
+                System.out.println("BRANCH");
+            }
+        }
     }
 
+    // this is the same as the WMCSimple implementation
     private static class MethodModifier {
         // look at the location for files
         public void getFiles(final File folder) throws FileNotFoundException {
