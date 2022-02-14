@@ -1,63 +1,75 @@
+import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.visitor.VoidVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class WMCSimple extends VoidVisitorAdapter{
+    // Weighted Methods per Class: The number of methods in a class
 
+    // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {
-        String CS451TestSystem = "C:\\Users\\GA\\IdeaProjects\\CS451Assignment\\CS451TestSystem";
-        String CS451working = CS451TestSystem + "\\weblog-analyzer";
-        //new MethodModifier().getFiles(new File(CS451TestSystem));
-        new MethodModifier().getFiles(new File(CS451working));
+        String PATH = "C:\\Users\\GA\\IdeaProjects\\CS451Assignment\\CS451TestSystem";
+        new MethodModifier().getFiles(new File(PATH));
     }
 
+    // separate class because of the getMethodCount method to return number of methods in class
     private static class MethodVisitor extends VoidVisitorAdapter {
-        int i = 1;
+        // number of methods in class
+        int methodCount = 1;
+
+        // return it
+        public int getMethodCount(){
+            return methodCount -1;
+        }
+
+        // visit the node
         public void visit(MethodDeclaration n, Object arg){
             System.out.println("\t- " + n.getName());
-            i++;
+            methodCount++;
         }
-        public int getMethodCount(){
-            return i-1;
-        }
-    }
 
-    private static class ClassNameCollector extends VoidVisitorAdapter<List<String>>{
-        @Override
-        public void visit(ClassOrInterfaceDeclaration n, List<String> collector) {
-            super.visit(n, collector);
-            collector.add(n.getNameAsString());
-        }
     }
 
     private static class MethodModifier {
+        // look at the location for files
         public void getFiles(final File folder) throws FileNotFoundException {
             for(final File entry : folder.listFiles()){
+                // if it's a directory, go into it
                 if (entry.isDirectory()) {
                     getFiles(entry);
                 } else {
+                    // otherwise just read each file
                     if(entry.toString().contains(".java")) {
-                        List<String> className = new ArrayList<>();
-                        CompilationUnit compilationUnit = StaticJavaParser.parse(entry);
-                        compilationUnit.setPackageDeclaration("blank");
-                        VoidVisitor<List<String>> classNameVisitor = new ClassNameCollector();
-                        classNameVisitor.visit(compilationUnit, className);
-                        System.out.println(className.get(0));
+                        CompilationUnit compilationUnit;
+                        try {
+                            compilationUnit = StaticJavaParser.parse(entry);
+                        }catch(ParseProblemException p){
+                            // currently just ignores any files that aren't edited to change the package import
+                            continue;
+                        }
+                        // first, get the class name
+                        compilationUnit.accept(new VoidVisitorAdapter<Void>(){
+                            @Override
+                            public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
+                                System.out.println(n.getName());
+                                super.visit(n, arg);
+                            }
+                        }, null);
+
+                        // now read each method
                         MethodVisitor mv = new MethodVisitor();
                         mv.visit(compilationUnit, null);
+
+                        // return the total method declarations
                         System.out.println("Total number of methods in class: " + mv.getMethodCount() + "\n");
                     }
                 }
             }
         }
     }
-
 }

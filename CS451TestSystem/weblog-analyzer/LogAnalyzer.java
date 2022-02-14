@@ -1,4 +1,4 @@
-package weblog;
+package weblog
 
 /**
  * Read web server data and analyse hourly access patterns.
