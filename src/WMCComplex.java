@@ -29,9 +29,6 @@ public class WMCComplex extends VoidVisitorAdapter{
                 } else {
                     // otherwise just read each file
                     if(entry.toString().contains(".java")) {
-                        // instantiate number of method declarations and branches
-                        int methDec = 0;
-                        int branches = 0;
                         CompilationUnit compilationUnit;
                         try {
                             compilationUnit = StaticJavaParser.parse(entry);
@@ -45,22 +42,38 @@ public class WMCComplex extends VoidVisitorAdapter{
                             System.out.println(cid.getName());
                         }
 
+                        // instantiate number of method declarations and branches
+                        int methDec = 0;
+                        int classBranches = 0;
                         // now read each method and pull out the switch and if statements
                         for(MethodDeclaration methodDeclaration : compilationUnit.findAll(MethodDeclaration.class)){
                             System.out.println("\t- " + methodDeclaration.getName());
                             methDec++;
-                            for(SwitchStmt switchStmt : compilationUnit.findAll(SwitchStmt.class)){
+                            int branches = 1;
+                            for(SwitchStmt switchStmt : methodDeclaration.findAll(SwitchStmt.class)){
+                                // check if the switch statement has conjunctions
+                                if(switchStmt.toString().contains("&&") || switchStmt.toString().contains("||")){
+                                    //System.out.println("CONDITIONAL");
+                                    branches++;
+                                }
                                 branches++;
                             }
-                            for(IfStmt ifStmt : compilationUnit.findAll(IfStmt.class)) {
+                            for(IfStmt ifStmt : methodDeclaration.findAll(IfStmt.class)) {
+                                // check if the if statement has conjunctions
+                                if(ifStmt.toString().contains("&&") || ifStmt.toString().contains("||")){
+                                    //System.out.println("CONDITIONAL");
+                                    branches++;
+                                }
                                 branches++;
                             }
+                            System.out.println("\t\t- Method branch count - " + (branches));
+                            classBranches = classBranches + branches;
                         }
 
                         // return the total method declarations
                         System.out.println("Total number of methods in class: " + methDec);
-                        System.out.println("Branch count for class: " + branches);
-                        System.out.println("Class complexity: " + (methDec + branches) + "\n");
+                        System.out.println("Branch count for class: " + (classBranches));
+                        System.out.println("Class complexity: " + (methDec + classBranches) + "\n");
                     }
                 }
             }
