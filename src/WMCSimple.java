@@ -51,7 +51,7 @@ public class WMCSimple extends VoidVisitorAdapter{
                         }
 
                         // return the total method declarations
-                        System.out.println("Class complexity: " + complexity + "\n");
+                        System.out.println("WMC Simple Class complexity: " + complexity + "\n");
                     }
                 }
             }

@@ -60,7 +60,7 @@ public class RFC extends VoidVisitorAdapter{
                         }
 
                         // return the total method declarations and calls
-                        System.out.println("Class complexity (method declarations + method calls): " +
+                        System.out.println("RFC Class complexity (method declarations + method calls): " +
                                 (methodDec + methodCall) + "\n");
                     }
                 }

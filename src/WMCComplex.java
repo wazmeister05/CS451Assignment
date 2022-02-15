@@ -73,7 +73,7 @@ public class WMCComplex extends VoidVisitorAdapter{
                         // return the total method declarations
                         System.out.println("Total number of methods in class: " + methDec);
                         System.out.println("Branch count for class: " + (classBranches));
-                        System.out.println("Class complexity: " + (methDec + classBranches) + "\n");
+                        System.out.println("WMC Complex Class complexity: " + (methDec + classBranches) + "\n");
                     }
                 }
             }
