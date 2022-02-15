@@ -15,51 +15,15 @@ public class RFC extends VoidVisitorAdapter{
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {
         String PATH = "C:\\Users\\GA\\IdeaProjects\\CS451Assignment\\CS451TestSystem";
-        new MethodModifier().getFiles(new File(PATH));
-    }
-
-    // this is a separate class because of the getMethodCall and getMethodDec methods
-    private static class MethodVisitor extends VoidVisitorAdapter {
-        // the number of methods in a class
-        int methodDec = 0;
-
-        // return number of methods in a class
-        public int getMethodDec(){
-            return methodDec;
-        }
-
-        // the number of method calls in a class
-        int methodCall = 0;
-
-        // return number of method calls in a class
-        public int getMethodCall(){
-            return methodCall;
-        }
-
-        // visit each of the nodes in the tree
-        public void visit(MethodDeclaration n, Object arg){
-            System.out.println("\t- " + n.getName());
-            // found a method so count it
-            methodDec++;
-            // each method may have calls in it, so deal with it
-            n.accept(new VoidVisitorAdapter<Void>(){
-                @Override
-                public void visit(final MethodCallExpr n, final Void arg){
-                    System.out.println("\t\t- " + n.getName());
-                    // found a method call so count it
-                    methodCall++;
-                    super.visit(n, arg);
-                }
-            }, null);
-        }
+        new MethodModifier().analyseFiles(new File(PATH));
     }
 
     private static class MethodModifier {
-        public void getFiles(final File folder) throws FileNotFoundException {
+        public void analyseFiles(final File folder) throws FileNotFoundException {
             for(final File entry : folder.listFiles()){
                 if (entry.isDirectory()) {
                     // check subdirectories for files
-                    getFiles(entry);
+                    analyseFiles(entry);
                 } else {
                     // found a java file, parse it.
                     if(entry.toString().contains(".java")) {
@@ -80,14 +44,24 @@ public class RFC extends VoidVisitorAdapter{
                                 super.visit(n, arg);
                             }
                         }, null);
-                        // now get the method name and method calls
-                        MethodVisitor mv = new MethodVisitor();
-                        mv.visit(compilationUnit, null);
+
+                        int methodDec = 0;
+                        int methodCall = 0;
+
+                        // for each found method, print name and increment methodDec
+                        for(MethodDeclaration methodDeclaration : compilationUnit.findAll(MethodDeclaration.class)){
+                            System.out.println("\t- " + methodDeclaration.getName());
+                            methodDec++;
+                            for(MethodCallExpr mce : methodDeclaration.findAll(MethodCallExpr.class)){
+                                System.out.println("\t\t- " + mce.getName());
+                                // found a method call so count it
+                                methodCall++;
+                            }
+                        }
 
                         // return the total method declarations and calls
-                        System.out.println("Total number of methods declarations (" + mv.getMethodDec() +
-                                ") and method calls (" + mv.getMethodCall() + ") in class: " +
-                                (mv.getMethodDec() + mv.getMethodCall()) + "\n");
+                        System.out.println("Class complexity (method declarations + method calls): " +
+                                (methodDec + methodCall) + "\n");
                     }
                 }
             }
