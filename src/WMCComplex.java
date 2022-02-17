@@ -12,20 +12,22 @@ import java.io.FileNotFoundException;
 
 public class WMCComplex extends VoidVisitorAdapter{
     // Weighted Methods per Class using Cyclometric Complexity: The number of decisions in a method + 1
+
+    final static String PATH = "C:\\Users\\GA\\IdeaProjects\\CS451Assignment\\CS451TestSystem";
+
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {
-        String PATH = "C:\\Users\\GA\\IdeaProjects\\CS451Assignment\\CS451TestSystem";
-        new MethodModifier().getFiles(new File(PATH));
+        new MethodModifier().analyseFiles(new File(PATH));
     }
 
     // this is very similar to WMCSimple
     private static class MethodModifier {
         // look at the location for files
-        public void getFiles(final File folder) throws FileNotFoundException {
+        public void analyseFiles(final File folder) throws FileNotFoundException {
             for(final File entry : folder.listFiles()){
                 // if it's a directory, go into it
                 if (entry.isDirectory()) {
-                    getFiles(entry);
+                    analyseFiles(entry);
                 } else {
                     // otherwise just read each file
                     if(entry.toString().contains(".java")) {
