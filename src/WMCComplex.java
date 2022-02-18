@@ -3,8 +3,7 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.SwitchStmt;
+import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
@@ -22,6 +21,7 @@ public class WMCComplex extends VoidVisitorAdapter{
 
     // this is very similar to WMCSimple
     private static class MethodModifier {
+
         // look at the location for files
         public void analyseFiles(final File folder) throws FileNotFoundException {
             for(final File entry : folder.listFiles()){
@@ -52,6 +52,38 @@ public class WMCComplex extends VoidVisitorAdapter{
                             System.out.println("\t- " + methodDeclaration.getName());
                             methDec++;
                             int branches = 1;
+                            for(WhileStmt whileStmt : methodDeclaration.findAll(WhileStmt.class)){
+                                // check if the switch statement has conjunctions
+                                if(whileStmt.toString().contains("&&") || whileStmt.toString().contains("||")){
+                                    //System.out.println("CONDITIONAL");
+                                    branches++;
+                                }
+                                branches++;
+                            }
+                            for(DoStmt doStmt : methodDeclaration.findAll(DoStmt.class)){
+                                // check if the switch statement has conjunctions
+                                if(doStmt.toString().contains("&&") || doStmt.toString().contains("||")){
+                                    //System.out.println("CONDITIONAL");
+                                    branches++;
+                                }
+                                branches++;
+                            }
+                            for(ForEachStmt forEachStmt : methodDeclaration.findAll(ForEachStmt.class)){
+                                // check if the switch statement has conjunctions
+                                if(forEachStmt.toString().contains("&&") || forEachStmt.toString().contains("||")){
+                                    //System.out.println("CONDITIONAL");
+                                    branches++;
+                                }
+                                branches++;
+                            }
+                            for(ForStmt forStmt : methodDeclaration.findAll(ForStmt.class)){
+                                // check if the switch statement has conjunctions
+                                if(forStmt.toString().contains("&&") || forStmt.toString().contains("||")){
+                                    //System.out.println("CONDITIONAL");
+                                    branches++;
+                                }
+                                branches++;
+                            }
                             for(SwitchStmt switchStmt : methodDeclaration.findAll(SwitchStmt.class)){
                                 // check if the switch statement has conjunctions
                                 if(switchStmt.toString().contains("&&") || switchStmt.toString().contains("||")){
