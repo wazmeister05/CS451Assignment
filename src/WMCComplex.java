@@ -45,41 +45,35 @@ public class WMCComplex extends VoidVisitorAdapter{
                         }
 
                         // instantiate number of method declarations and branches
-                        int methDec = 0;
                         int classBranches = 0;
                         // now read each method and pull out the switch and if statements
                         for(MethodDeclaration methodDeclaration : compilationUnit.findAll(MethodDeclaration.class)){
                             System.out.println("\t- " + methodDeclaration.getName());
-                            methDec++;
                             int branches = 1;
                             for(WhileStmt whileStmt : methodDeclaration.findAll(WhileStmt.class)){
-                                // check if the switch statement has conjunctions
+                                // check if the while statement has conjunctions
                                 if(whileStmt.toString().contains("&&") || whileStmt.toString().contains("||")){
-                                    //System.out.println("CONDITIONAL");
                                     branches++;
                                 }
                                 branches++;
                             }
                             for(DoStmt doStmt : methodDeclaration.findAll(DoStmt.class)){
-                                // check if the switch statement has conjunctions
+                                // check if the do while statement has conjunctions
                                 if(doStmt.toString().contains("&&") || doStmt.toString().contains("||")){
-                                    //System.out.println("CONDITIONAL");
                                     branches++;
                                 }
                                 branches++;
                             }
                             for(ForEachStmt forEachStmt : methodDeclaration.findAll(ForEachStmt.class)){
-                                // check if the switch statement has conjunctions
+                                // check if the for-each statement has conjunctions
                                 if(forEachStmt.toString().contains("&&") || forEachStmt.toString().contains("||")){
-                                    //System.out.println("CONDITIONAL");
                                     branches++;
                                 }
                                 branches++;
                             }
                             for(ForStmt forStmt : methodDeclaration.findAll(ForStmt.class)){
-                                // check if the switch statement has conjunctions
+                                // check if the for statement has conjunctions
                                 if(forStmt.toString().contains("&&") || forStmt.toString().contains("||")){
-                                    //System.out.println("CONDITIONAL");
                                     branches++;
                                 }
                                 branches++;
@@ -87,7 +81,6 @@ public class WMCComplex extends VoidVisitorAdapter{
                             for(SwitchStmt switchStmt : methodDeclaration.findAll(SwitchStmt.class)){
                                 // check if the switch statement has conjunctions
                                 if(switchStmt.toString().contains("&&") || switchStmt.toString().contains("||")){
-                                    //System.out.println("CONDITIONAL");
                                     branches++;
                                 }
                                 branches++;
@@ -95,7 +88,6 @@ public class WMCComplex extends VoidVisitorAdapter{
                             for(IfStmt ifStmt : methodDeclaration.findAll(IfStmt.class)) {
                                 // check if the if statement has conjunctions
                                 if(ifStmt.toString().contains("&&") || ifStmt.toString().contains("||")){
-                                    //System.out.println("CONDITIONAL");
                                     branches++;
                                 }
                                 branches++;
@@ -104,10 +96,8 @@ public class WMCComplex extends VoidVisitorAdapter{
                             classBranches = classBranches + branches;
                         }
 
-                        // return the total method declarations
-                        System.out.println("Total number of methods in class: " + methDec);
-                        System.out.println("Branch count for class: " + (classBranches));
-                        System.out.println("WMC Complex Class complexity: " + (methDec + classBranches) + "\n");
+                        // return the total method declarations (i.e. complexity)
+                        System.out.println("WMC Complex Class complexity: " + classBranches + "\n");
                     }
                 }
             }
