@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
 public class WMCComplex extends VoidVisitorAdapter{
     // Weighted Methods per Class using Cyclometric Complexity: The number of decisions in a method + 1
 
-    final static String PATH = "C:\\Users\\GA\\IdeaProjects\\CS451Assignment\\CS451TestSystem";
+    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem";
 
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {

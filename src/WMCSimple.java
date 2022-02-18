@@ -11,7 +11,7 @@ import java.io.FileNotFoundException;
 public class WMCSimple extends VoidVisitorAdapter{
     // Weighted Methods per Class: The number of methods in a class
 
-    final static String PATH = "C:\\Users\\GA\\IdeaProjects\\CS451Assignment\\CS451TestSystem";
+    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem";
 
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {

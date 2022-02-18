@@ -12,11 +12,10 @@ import java.io.FileNotFoundException;
 public class RFC extends VoidVisitorAdapter{
     // Response For a Class: number of methods and method calls in a class
 
-    final static String PATH = "C:\\Users\\GA\\IdeaProjects\\CS451Assignment\\CS451TestSystem";
+    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem";
 
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {
-        String PATH = "C:\\Users\\GA\\IdeaProjects\\CS451Assignment\\CS451TestSystem";
         new MethodModifier().analyseFiles(new File(PATH));
     }
 
