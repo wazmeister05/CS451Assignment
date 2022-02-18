@@ -1,5 +1,3 @@
-package weblog;
-
 import java.io.*;
 import java.util.*;
 

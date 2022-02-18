@@ -1,5 +1,3 @@
-package taxi
-
 /**
  * Indicate that there was no passenger at a pickup point.
  * 

@@ -1,5 +1,3 @@
-package taxi
-
 /**
  * An item in the city.
  * 

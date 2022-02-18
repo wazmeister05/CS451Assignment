@@ -1,5 +1,3 @@
-package weblog;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;

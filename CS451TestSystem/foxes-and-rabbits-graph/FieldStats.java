@@ -1,5 +1,3 @@
-package foxes
-
 import java.awt.Color;
 import java.util.HashMap;
 

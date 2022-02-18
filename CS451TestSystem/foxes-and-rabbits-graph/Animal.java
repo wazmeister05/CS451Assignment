@@ -1,5 +1,3 @@
-package foxes
-
 import java.util.List;
 
 /**

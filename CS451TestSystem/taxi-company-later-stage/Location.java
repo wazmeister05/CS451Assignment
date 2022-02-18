@@ -1,5 +1,3 @@
-package taxi
-
 /**
  * Model a location in a city.
  * 

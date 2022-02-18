@@ -1,5 +1,3 @@
-package taxi
-
 import java.awt.Image;
     
 /**

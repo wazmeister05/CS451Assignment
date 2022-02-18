@@ -1,5 +1,3 @@
-package taxi
-
 /**
  * An actor in the taxi-company simulation.
  * 

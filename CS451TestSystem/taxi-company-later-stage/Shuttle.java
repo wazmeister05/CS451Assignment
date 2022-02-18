@@ -1,5 +1,3 @@
-package taxi
-
 import java.util.List;
 import java.util.LinkedList;
     

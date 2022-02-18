@@ -1,5 +1,3 @@
-package weblog;
-
 import java.util.Scanner;
 
 /**
