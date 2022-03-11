@@ -92,6 +92,7 @@ public class WMCComplex extends VoidVisitorAdapter{
                                 }
                                 branches++;
                             }
+
                             System.out.println("\t\t- Method branch count - " + (branches));
                             classBranches = classBranches + branches;
                         }

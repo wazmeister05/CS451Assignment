@@ -8,6 +8,8 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class RFC extends VoidVisitorAdapter{
     // Response For a Class: number of methods and method calls in a class
@@ -33,7 +35,6 @@ public class RFC extends VoidVisitorAdapter{
                             // try parsing the file
                             compilationUnit = StaticJavaParser.parse(entry);
                         }catch(ParseProblemException p){
-                            // currently just ignores any files that aren't edited to change the package import
                             continue;
                         }
                         // first return the class name, inline because it doesn't need anything more than visit.
@@ -51,17 +52,17 @@ public class RFC extends VoidVisitorAdapter{
 
                         // for each found method, print name and increment methodDec
                         for(MethodDeclaration methodDeclaration : compilationUnit.findAll(MethodDeclaration.class)){
+                            Set<String> methodsCallExp = new HashSet<>();
                             System.out.println("\t- " + methodDeclaration.getName());
                             methodDec++;
                             for(MethodCallExpr mce : methodDeclaration.findAll(MethodCallExpr.class)){
-                                System.out.println("\t\t- " + mce.getName());
-                                // found a method call so count it
-                                methodCall++;
+                                methodsCallExp.add(mce.toString());
                             }
+                            methodCall = methodsCallExp.size();
                         }
 
                         // return the total method declarations and calls
-                        System.out.println("RFC Class complexity (method declarations + method calls): " +
+                        System.out.println("RFC Class complexity: " +
                                 (methodDec + methodCall) + "\n");
                     }
                 }
