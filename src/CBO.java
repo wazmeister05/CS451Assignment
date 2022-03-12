@@ -2,8 +2,6 @@ import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.MethodReferenceExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
@@ -26,7 +24,7 @@ public class CBO extends VoidVisitorAdapter{
         public void analyseFiles(final File folder) throws FileNotFoundException {
 
             // Create map to store class names and method calls in that class
-            Map<String, Set<String>> classReferences = new HashMap<>();
+            Map<String, Set<String>> allTheClasses = new HashMap<>();
 
             for(final File entry : folder.listFiles()){
                 // if it's a directory, go into it
@@ -59,36 +57,27 @@ public class CBO extends VoidVisitorAdapter{
                             }
                         }
                         // now add the file and the references to it to the map
-                        classReferences.put(className[0], references);
+                        allTheClasses.put(className[0], references);
                     }
                 }
             }
-            handle(removeLibraryClasses(classReferences));
-        }
 
-
-        public Map<String, Set<String>> removeLibraryClasses(Map<String, Set<String>> classes){
-            Map<String, Set<String>> newClasses = new HashMap<>();
-            List<String> classList = new ArrayList<>(classes.keySet());
-            for(Map.Entry<String, Set<String>> entry : classes.entrySet()){
-                Set<String> add = new HashSet<>();
-                for(String entryString : entry.getValue()){
-                    if(classList.contains(entryString)){
-                        add.add(entryString);
-                    }
+            List<String> classesInProject = new ArrayList<>(allTheClasses.keySet());
+            for (String className: classesInProject) {
+                Set<String> others = allTheClasses.get(className);
+                others.retainAll(classesInProject);
+                for (String other: others) {
+                    allTheClasses.get(other).add(className);
                 }
-                newClasses.put(entry.getKey(), add);
             }
-            return newClasses;
+            handle(allTheClasses);
         }
 
 
-        //TODO: here is where I need to determine the linking
         public void handle(Map<String, Set<String>> classReferences){
             for(Map.Entry<String, Set<String>> entry: classReferences.entrySet()){
-                System.out.println(entry);
+                //System.out.println(entry);
             }
-
         }
     }
 }
