@@ -64,10 +64,10 @@ public class CBO extends VoidVisitorAdapter{
 
             List<String> classesInProject = new ArrayList<>(allTheClasses.keySet());
             for (String className: classesInProject) {
-                Set<String> others = allTheClasses.get(className);
-                others.retainAll(classesInProject);
-                for (String other: others) {
-                    allTheClasses.get(other).add(className);
+                Set<String> nested = allTheClasses.get(className);
+                nested.retainAll(classesInProject);
+                for (String nest: nested) {
+                    allTheClasses.get(nest).add(className);
                 }
             }
             handle(allTheClasses);
@@ -75,8 +75,9 @@ public class CBO extends VoidVisitorAdapter{
 
 
         public void handle(Map<String, Set<String>> classReferences){
+            System.out.println(classReferences);
             for(Map.Entry<String, Set<String>> entry: classReferences.entrySet()){
-                //System.out.println(entry);
+
             }
         }
     }
