@@ -4,6 +4,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
+import javax.swing.text.html.HTMLEditorKit;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -70,15 +71,21 @@ public class CBO extends VoidVisitorAdapter{
                     allTheClasses.get(nest).add(className);
                 }
             }
-            handle(allTheClasses);
+            handle(classesInProject, allTheClasses);
         }
 
 
-        public void handle(Map<String, Set<String>> classReferences){
+        // TODO: need to actually deal with this...
+        public void handle(List<String> classesInProject, Map<String, Set<String>> classReferences){
             System.out.println(classReferences);
-            for(Map.Entry<String, Set<String>> entry: classReferences.entrySet()){
+            Map<String, Map<String, Integer>> classCounts = new HashMap<>();
 
+            // create a map containing the names of the classes to add final values to later
+            for(String entry : classesInProject){
+                classCounts.put(entry, null);
             }
+
+
         }
     }
 }
