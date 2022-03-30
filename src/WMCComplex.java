@@ -1,7 +1,9 @@
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.CallableDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.*;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -46,9 +48,63 @@ public class WMCComplex extends VoidVisitorAdapter{
 
                         // instantiate number of method declarations and branches
                         int classBranches = 0;
+
+                        // deal with the constructor
+                        for(ConstructorDeclaration cd : compilationUnit.findAll(ConstructorDeclaration.class)){
+                            BlockStmt bod = cd.getBody();
+                            CallableDeclaration.Signature sig = cd.getSignature();
+
+                            int branches = 1;
+                            for(WhileStmt whileStmt : cd.findAll(WhileStmt.class)){
+                                // check if the while statement has conjunctions
+                                if(whileStmt.toString().contains("&&") || whileStmt.toString().contains("||")){
+                                    branches++;
+                                }
+                                branches++;
+                            }
+                            for(DoStmt doStmt : cd.findAll(DoStmt.class)){
+                                // check if the do while statement has conjunctions
+                                if(doStmt.toString().contains("&&") || doStmt.toString().contains("||")){
+                                    branches++;
+                                }
+                                branches++;
+                            }
+                            for(ForEachStmt forEachStmt : cd.findAll(ForEachStmt.class)){
+                                // check if the for-each statement has conjunctions
+                                if(forEachStmt.toString().contains("&&") || forEachStmt.toString().contains("||")){
+                                    branches++;
+                                }
+                                branches++;
+                            }
+                            for(ForStmt forStmt : cd.findAll(ForStmt.class)){
+                                // check if the for statement has conjunctions
+                                if(forStmt.toString().contains("&&") || forStmt.toString().contains("||")){
+                                    branches++;
+                                }
+                                branches++;
+                            }
+                            for(SwitchStmt switchStmt : cd.findAll(SwitchStmt.class)){
+                                // check if the switch statement has conjunctions
+                                if(switchStmt.toString().contains("&&") || switchStmt.toString().contains("||")){
+                                    branches++;
+                                }
+                                branches++;
+                            }
+                            for(IfStmt ifStmt : cd.findAll(IfStmt.class)) {
+                                // check if the if statement has conjunctions
+                                if(ifStmt.toString().contains("&&") || ifStmt.toString().contains("||")){
+                                    branches++;
+                                }
+                                branches++;
+                            }
+
+                            //System.out.println("\t- Constructor branch count - " + (branches));
+                            classBranches = classBranches + branches;
+                        }
+
                         // now read each method and pull out the switch and if statements
                         for(MethodDeclaration methodDeclaration : compilationUnit.findAll(MethodDeclaration.class)){
-                            System.out.println("\t- " + methodDeclaration.getName());
+                            //System.out.println("\t- " + methodDeclaration.getName());
                             int branches = 1;
                             for(WhileStmt whileStmt : methodDeclaration.findAll(WhileStmt.class)){
                                 // check if the while statement has conjunctions
@@ -93,12 +149,12 @@ public class WMCComplex extends VoidVisitorAdapter{
                                 branches++;
                             }
 
-                            System.out.println("\t\t- Method branch count - " + (branches));
+                            //System.out.println("\t\t- Method branch count - " + (branches));
                             classBranches = classBranches + branches;
                         }
 
                         // return the total method declarations (i.e. complexity)
-                        System.out.println("WMC Complex Class complexity: " + classBranches + "\n");
+                        System.out.println("WMC Complex Class complexity: " + classBranches + "\n-------------------");
                     }
                 }
             }

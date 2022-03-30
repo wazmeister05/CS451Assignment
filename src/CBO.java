@@ -2,9 +2,9 @@ import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
-import javax.swing.text.html.HTMLEditorKit;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -12,8 +12,8 @@ import java.util.*;
 public class CBO extends VoidVisitorAdapter{
     // Weighted Methods per Class: The number of methods in a class
 
-    //final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem";
-    final static String PATH = "C:\\Users\\GA\\Downloads\\test";
+    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem\\taxi-company-later-stage";
+    //final static String PATH = "C:\\Users\\GA\\Downloads\\test";
 
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {
@@ -33,7 +33,8 @@ public class CBO extends VoidVisitorAdapter{
                     analyseFiles(entry);
                 } else {
                     // otherwise just read each file
-                    if(entry.toString().contains(".java")) {
+                    if(entry.toString().contains(".java"))
+                    {
                         Set<String> references = new HashSet<>();
                         final String[] className = {""};
                         // instantiate number of method declarations (i.e. complexity)
@@ -52,9 +53,30 @@ public class CBO extends VoidVisitorAdapter{
                             }
                         }, null);
 
+                        // deal with the constructor
+                        for(ConstructorDeclaration cd : compilationUnit.findAll(ConstructorDeclaration.class)){
+                            BlockStmt bod = cd.getBody();
+                            CallableDeclaration.Signature sig = cd.getSignature();
+
+                        }
+
                         for(VariableDeclarator ci : compilationUnit.findAll(VariableDeclarator.class)){
                             if(!ci.getType().isPrimitiveType()){
-                                references.add(ci.getTypeAsString().replaceAll("\\[", "").replaceAll("\\]",""));
+                                if(ci.getTypeAsString().contains("<")){
+                                    String[] ci2 = ci.getTypeAsString().replace(">", "").split("<");
+                                    for(String str : ci2){
+                                        if(str.contains(",")){
+                                            String[] ci3 = str.split(",");
+                                            references.addAll(Arrays.asList(ci3));
+                                        }
+                                        else{
+                                            references.add(str);
+                                        }
+                                    }
+                                }
+                                else {
+                                    references.add(ci.getTypeAsString().replaceAll("\\[", "").replaceAll("\\]", ""));
+                                }
                             }
                         }
                         // now add the file and the references to it to the map
@@ -71,21 +93,23 @@ public class CBO extends VoidVisitorAdapter{
                     allTheClasses.get(nest).add(className);
                 }
             }
-            handle(classesInProject, allTheClasses);
+            handle(allTheClasses);
         }
 
 
         // TODO: need to actually deal with this...
-        public void handle(List<String> classesInProject, Map<String, Set<String>> classReferences){
-            System.out.println(classReferences);
-            Map<String, Map<String, Integer>> classCounts = new HashMap<>();
-
-            // create a map containing the names of the classes to add final values to later
-            for(String entry : classesInProject){
-                classCounts.put(entry, null);
+        public void handle(Map<String, Set<String>> classReferences){
+            for (String className : classReferences.keySet()) {
+                Integer classReferenceCount = 0;
+                for (Set<String> classReferenceSet : classReferences.values()) {
+                    for (String classReference : classReferenceSet) {
+                        if(classReference.contains(className)) {
+                            classReferenceCount++;
+                        }
+                    }
+                }
+                System.out.println(className + " complexity: " + classReferenceCount);
             }
-
-
         }
     }
 }

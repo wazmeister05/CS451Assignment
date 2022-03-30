@@ -2,6 +2,7 @@ import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
@@ -50,20 +51,31 @@ public class RFC extends VoidVisitorAdapter{
                         int methodDec = 0;
                         int methodCall = 0;
 
+                        // deal with the constructor
+                        for(ConstructorDeclaration cd : compilationUnit.findAll(ConstructorDeclaration.class)) {
+                            Set<String> methodsCallExp = new HashSet<>();
+                            //System.out.println("\t- " + methodDeclaration.getName());
+                            methodDec++;
+                            for(MethodCallExpr mce : cd.findAll(MethodCallExpr.class)){
+                                methodsCallExp.add(mce.toString());
+                            }
+                            methodCall += methodsCallExp.size();
+                        }
+
                         // for each found method, print name and increment methodDec
                         for(MethodDeclaration methodDeclaration : compilationUnit.findAll(MethodDeclaration.class)){
                             Set<String> methodsCallExp = new HashSet<>();
-                            System.out.println("\t- " + methodDeclaration.getName());
+                            //System.out.println("\t- " + methodDeclaration.getName());
                             methodDec++;
                             for(MethodCallExpr mce : methodDeclaration.findAll(MethodCallExpr.class)){
                                 methodsCallExp.add(mce.toString());
                             }
-                            methodCall = methodsCallExp.size();
+                            methodCall += methodsCallExp.size();
                         }
 
                         // return the total method declarations and calls
                         System.out.println("RFC Class complexity: " +
-                                (methodDec + methodCall) + "\n");
+                                (methodDec + methodCall) + "\n--------------");
                     }
                 }
             }
