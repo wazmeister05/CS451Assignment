@@ -43,7 +43,7 @@ public class WMCComplex extends VoidVisitorAdapter{
 
                         // first, get the class name
                         for(ClassOrInterfaceDeclaration cid : compilationUnit.findAll(ClassOrInterfaceDeclaration.class)){
-                            System.out.println(cid.getName());
+                            System.out.print(cid.getName());
                         }
 
                         // instantiate number of method declarations and branches
@@ -51,9 +51,6 @@ public class WMCComplex extends VoidVisitorAdapter{
 
                         // deal with the constructor
                         for(ConstructorDeclaration cd : compilationUnit.findAll(ConstructorDeclaration.class)){
-                            BlockStmt bod = cd.getBody();
-                            CallableDeclaration.Signature sig = cd.getSignature();
-
                             int branches = 1;
                             for(WhileStmt whileStmt : cd.findAll(WhileStmt.class)){
                                 // check if the while statement has conjunctions
@@ -154,7 +151,7 @@ public class WMCComplex extends VoidVisitorAdapter{
                         }
 
                         // return the total method declarations (i.e. complexity)
-                        System.out.println("WMC Complex Class complexity: " + classBranches + "\n-------------------");
+                        System.out.println(" complexity: " + classBranches);
                     }
                 }
             }

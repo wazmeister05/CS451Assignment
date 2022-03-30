@@ -43,7 +43,7 @@ public class RFC extends VoidVisitorAdapter{
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
                                 // get the name of the class
-                                System.out.println(n.getName());
+                                System.out.print(n.getName());
                                 super.visit(n, arg);
                             }
                         }, null);
@@ -62,7 +62,7 @@ public class RFC extends VoidVisitorAdapter{
                             methodCall += methodsCallExp.size();
                         }
 
-                        // for each found method, print name and increment methodDec
+                        // now the methods
                         for(MethodDeclaration methodDeclaration : compilationUnit.findAll(MethodDeclaration.class)){
                             Set<String> methodsCallExp = new HashSet<>();
                             //System.out.println("\t- " + methodDeclaration.getName());
@@ -74,8 +74,7 @@ public class RFC extends VoidVisitorAdapter{
                         }
 
                         // return the total method declarations and calls
-                        System.out.println("RFC Class complexity: " +
-                                (methodDec + methodCall) + "\n--------------");
+                        System.out.println(" complexity: " + (methodDec + methodCall));
                     }
                 }
             }

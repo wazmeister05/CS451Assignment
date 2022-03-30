@@ -3,6 +3,7 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
@@ -53,31 +54,10 @@ public class CBO extends VoidVisitorAdapter{
                             }
                         }, null);
 
-                        // deal with the constructor
-                        for(ConstructorDeclaration cd : compilationUnit.findAll(ConstructorDeclaration.class)){
-                            BlockStmt bod = cd.getBody();
-                            CallableDeclaration.Signature sig = cd.getSignature();
-
-                        }
-
-                        for(VariableDeclarator ci : compilationUnit.findAll(VariableDeclarator.class)){
-                            if(!ci.getType().isPrimitiveType()){
-                                if(ci.getTypeAsString().contains("<")){
-                                    String[] ci2 = ci.getTypeAsString().replace(">", "").split("<");
-                                    for(String str : ci2){
-                                        if(str.contains(",")){
-                                            String[] ci3 = str.split(",");
-                                            references.addAll(Arrays.asList(ci3));
-                                        }
-                                        else{
-                                            references.add(str);
-                                        }
-                                    }
-                                }
-                                else {
-                                    references.add(ci.getTypeAsString().replaceAll("\\[", "").replaceAll("\\]", ""));
-                                }
-                            }
+                        // TODO: work out which are library classes and exclude them.
+                        for(ClassOrInterfaceType cit : compilationUnit.findAll(ClassOrInterfaceType.class)){
+                              System.out.println(cit);
+                              references.add(cit.getNameAsString());
                         }
                         // now add the file and the references to it to the map
                         allTheClasses.put(className[0], references);
