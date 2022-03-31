@@ -7,7 +7,9 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Objects;
 
+/** @noinspection rawtypes*/
 public class WMCSimple extends VoidVisitorAdapter{
     // Weighted Methods per Class: The number of methods in a class
 
@@ -22,7 +24,7 @@ public class WMCSimple extends VoidVisitorAdapter{
     private static class MethodModifier {
         // look at the location for files
         public void analyseFiles(final File folder) throws FileNotFoundException {
-            for(final File entry : folder.listFiles()){
+            for(final File entry : Objects.requireNonNull(folder.listFiles())){
                 // if it's a directory, go into it
                 if (entry.isDirectory()) {
                     analyseFiles(entry);
@@ -30,29 +32,29 @@ public class WMCSimple extends VoidVisitorAdapter{
                     // otherwise just read each file
                     if(entry.toString().contains(".java")) {
                         // instantiate number of method declarations (i.e. complexity)
-                        int complexity = 0;
+                        final int[] complexity = {0};
                         CompilationUnit compilationUnit;
                         try {
                             compilationUnit = StaticJavaParser.parse(entry);
                         }catch(ParseProblemException p){
                             continue;
                         }
-                        // first, get the class name
+                        // get the class name and the number of methods
                         compilationUnit.accept(new VoidVisitorAdapter<Void>(){
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
                                 System.out.print(n.getName());
                                 super.visit(n, arg);
                             }
+
+                            public void visit(MethodDeclaration n, final Void arg) {
+                                complexity[0]++;
+                                super.visit(n, arg);
+                            }
                         }, null);
 
-                        // for each found method, print name and increment methDec
-                        for(MethodDeclaration methodDeclaration : compilationUnit.findAll(MethodDeclaration.class)){
-                            complexity++;
-                        }
-
                         // return the total method declarations
-                        System.out.println(" complexity: " + complexity);
+                        System.out.println(" complexity: " + complexity[0]);
                     }
                 }
             }

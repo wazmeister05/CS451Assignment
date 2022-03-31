@@ -1,7 +1,6 @@
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.CallableDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -10,7 +9,9 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Objects;
 
+/** @noinspection rawtypes*/
 public class WMCComplex extends VoidVisitorAdapter{
     // Weighted Methods per Class using Cyclometric Complexity: The number of decisions in a method + 1
 
@@ -26,13 +27,14 @@ public class WMCComplex extends VoidVisitorAdapter{
 
         // look at the location for files
         public void analyseFiles(final File folder) throws FileNotFoundException {
-            for(final File entry : folder.listFiles()){
+            for(final File entry : Objects.requireNonNull(folder.listFiles())){
                 // if it's a directory, go into it
                 if (entry.isDirectory()) {
                     analyseFiles(entry);
                 } else {
                     // otherwise just read each file
                     if(entry.toString().contains(".java")) {
+                        final int[] classBranches = {0};
                         CompilationUnit compilationUnit;
                         try {
                             compilationUnit = StaticJavaParser.parse(entry);
@@ -41,117 +43,113 @@ public class WMCComplex extends VoidVisitorAdapter{
                             continue;
                         }
 
-                        // first, get the class name
-                        for(ClassOrInterfaceDeclaration cid : compilationUnit.findAll(ClassOrInterfaceDeclaration.class)){
-                            System.out.print(cid.getName());
-                        }
-
-                        // instantiate number of method declarations and branches
-                        int classBranches = 0;
-
-                        // deal with the constructor
-                        for(ConstructorDeclaration cd : compilationUnit.findAll(ConstructorDeclaration.class)){
-                            int branches = 1;
-                            for(WhileStmt whileStmt : cd.findAll(WhileStmt.class)){
-                                // check if the while statement has conjunctions
-                                if(whileStmt.toString().contains("&&") || whileStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
-                            }
-                            for(DoStmt doStmt : cd.findAll(DoStmt.class)){
-                                // check if the do while statement has conjunctions
-                                if(doStmt.toString().contains("&&") || doStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
-                            }
-                            for(ForEachStmt forEachStmt : cd.findAll(ForEachStmt.class)){
-                                // check if the for-each statement has conjunctions
-                                if(forEachStmt.toString().contains("&&") || forEachStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
-                            }
-                            for(ForStmt forStmt : cd.findAll(ForStmt.class)){
-                                // check if the for statement has conjunctions
-                                if(forStmt.toString().contains("&&") || forStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
-                            }
-                            for(SwitchStmt switchStmt : cd.findAll(SwitchStmt.class)){
-                                // check if the switch statement has conjunctions
-                                if(switchStmt.toString().contains("&&") || switchStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
-                            }
-                            for(IfStmt ifStmt : cd.findAll(IfStmt.class)) {
-                                // check if the if statement has conjunctions
-                                if(ifStmt.toString().contains("&&") || ifStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
+                        compilationUnit.accept(new VoidVisitorAdapter<Void>() {
+                            @Override
+                            public void visit(ClassOrInterfaceDeclaration n, final Void arg){
+                                System.out.print(n.getName());
+                                super.visit(n, arg);
                             }
 
-                            //System.out.println("\t- Constructor branch count - " + (branches));
-                            classBranches = classBranches + branches;
-                        }
+                            public void visit(ConstructorDeclaration n, final Void arg){
+                                int branches = 1;
+                                for(WhileStmt whileStmt : n.findAll(WhileStmt.class)){
+                                    // check if the while statement has conjunctions
+                                    if(whileStmt.toString().contains("&&") || whileStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+                                for(DoStmt doStmt : n.findAll(DoStmt.class)){
+                                    // check if the do while statement has conjunctions
+                                    if(doStmt.toString().contains("&&") || doStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+                                for(ForEachStmt forEachStmt : n.findAll(ForEachStmt.class)){
+                                    // check if the for-each statement has conjunctions
+                                    if(forEachStmt.toString().contains("&&") || forEachStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+                                for(ForStmt forStmt : n.findAll(ForStmt.class)){
+                                    // check if the for statement has conjunctions
+                                    if(forStmt.toString().contains("&&") || forStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+                                for(SwitchStmt switchStmt : n.findAll(SwitchStmt.class)){
+                                    // check if the switch statement has conjunctions
+                                    if(switchStmt.toString().contains("&&") || switchStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+                                for(IfStmt ifStmt : n.findAll(IfStmt.class)) {
+                                    // check if the if statement has conjunctions
+                                    if(ifStmt.toString().contains("&&") || ifStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
 
-                        // now read each method and pull out the switch and if statements
-                        for(MethodDeclaration methodDeclaration : compilationUnit.findAll(MethodDeclaration.class)){
-                            //System.out.println("\t- " + methodDeclaration.getName());
-                            int branches = 1;
-                            for(WhileStmt whileStmt : methodDeclaration.findAll(WhileStmt.class)){
-                                // check if the while statement has conjunctions
-                                if(whileStmt.toString().contains("&&") || whileStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
-                            }
-                            for(DoStmt doStmt : methodDeclaration.findAll(DoStmt.class)){
-                                // check if the do while statement has conjunctions
-                                if(doStmt.toString().contains("&&") || doStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
-                            }
-                            for(ForEachStmt forEachStmt : methodDeclaration.findAll(ForEachStmt.class)){
-                                // check if the for-each statement has conjunctions
-                                if(forEachStmt.toString().contains("&&") || forEachStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
-                            }
-                            for(ForStmt forStmt : methodDeclaration.findAll(ForStmt.class)){
-                                // check if the for statement has conjunctions
-                                if(forStmt.toString().contains("&&") || forStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
-                            }
-                            for(SwitchStmt switchStmt : methodDeclaration.findAll(SwitchStmt.class)){
-                                // check if the switch statement has conjunctions
-                                if(switchStmt.toString().contains("&&") || switchStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
-                            }
-                            for(IfStmt ifStmt : methodDeclaration.findAll(IfStmt.class)) {
-                                // check if the if statement has conjunctions
-                                if(ifStmt.toString().contains("&&") || ifStmt.toString().contains("||")){
-                                    branches++;
-                                }
-                                branches++;
+                                classBranches[0] = classBranches[0] + branches;
                             }
 
-                            //System.out.println("\t\t- Method branch count - " + (branches));
-                            classBranches = classBranches + branches;
-                        }
+                            public void visit(MethodDeclaration n, final Void arg){
+                                int branches = 1;
+                                for(WhileStmt whileStmt : n.findAll(WhileStmt.class)){
+                                    // check if the while statement has conjunctions
+                                    if(whileStmt.toString().contains("&&") || whileStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+                                for(DoStmt doStmt : n.findAll(DoStmt.class)){
+                                    // check if the do while statement has conjunctions
+                                    if(doStmt.toString().contains("&&") || doStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+                                for(ForEachStmt forEachStmt : n.findAll(ForEachStmt.class)){
+                                    // check if the for-each statement has conjunctions
+                                    if(forEachStmt.toString().contains("&&") || forEachStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+                                for(ForStmt forStmt : n.findAll(ForStmt.class)){
+                                    // check if the for statement has conjunctions
+                                    if(forStmt.toString().contains("&&") || forStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+                                for(SwitchStmt switchStmt : n.findAll(SwitchStmt.class)){
+                                    // check if the switch statement has conjunctions
+                                    if(switchStmt.toString().contains("&&") || switchStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+                                for(IfStmt ifStmt : n.findAll(IfStmt.class)) {
+                                    // check if the if statement has conjunctions
+                                    if(ifStmt.toString().contains("&&") || ifStmt.toString().contains("||")){
+                                        branches++;
+                                    }
+                                    branches++;
+                                }
+
+                                //System.out.println("\t\t- Method branch count - " + (branches));
+                                classBranches[0] = classBranches[0] + branches;
+                            }
+                        }, null);
 
                         // return the total method declarations (i.e. complexity)
-                        System.out.println(" complexity: " + classBranches);
+                        System.out.println(" complexity: " + classBranches[0]);
                     }
                 }
             }

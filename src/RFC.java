@@ -10,8 +10,10 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
+/** @noinspection rawtypes*/
 public class RFC extends VoidVisitorAdapter{
     // Response For a Class: number of methods and method calls in a class
 
@@ -24,13 +26,15 @@ public class RFC extends VoidVisitorAdapter{
 
     private static class MethodModifier {
         public void analyseFiles(final File folder) throws FileNotFoundException {
-            for(final File entry : folder.listFiles()){
+            for(final File entry : Objects.requireNonNull(folder.listFiles())){
                 if (entry.isDirectory()) {
                     // check subdirectories for files
                     analyseFiles(entry);
                 } else {
                     // found a java file, parse it.
                     if(entry.toString().contains(".java")) {
+                        final int[] methodDec = {0};
+                        final int[] methodCall = {0};
                         CompilationUnit compilationUnit;
                         try{
                             // try parsing the file
@@ -38,7 +42,7 @@ public class RFC extends VoidVisitorAdapter{
                         }catch(ParseProblemException p){
                             continue;
                         }
-                        // first return the class name, inline because it doesn't need anything more than visit.
+                        // first return the class name
                         compilationUnit.accept(new VoidVisitorAdapter<Void>(){
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
@@ -46,35 +50,33 @@ public class RFC extends VoidVisitorAdapter{
                                 System.out.print(n.getName());
                                 super.visit(n, arg);
                             }
+
+                            public void visit(ConstructorDeclaration n, final Void arg) {
+                                Set<String> methodsCallExp = new HashSet<>();
+                                //System.out.println("\t- " + methodDeclaration.getName());
+                                methodDec[0]++;
+                                for(MethodCallExpr mce : n.findAll(MethodCallExpr.class)){
+                                    methodsCallExp.add(mce.toString());
+                                }
+                                methodCall[0] += methodsCallExp.size();
+                                super.visit(n, arg);
+                            }
+
+                            public void visit(MethodDeclaration n, final Void arg) {
+                                Set<String> methodsCallExp = new HashSet<>();
+                                //System.out.println("\t- " + methodDeclaration.getName());
+                                methodDec[0]++;
+                                for(MethodCallExpr mce : n.findAll(MethodCallExpr.class)){
+                                    methodsCallExp.add(mce.toString());
+                                }
+                                methodCall[0] += methodsCallExp.size();
+                                super.visit(n, arg);
+                            }
+
                         }, null);
 
-                        int methodDec = 0;
-                        int methodCall = 0;
-
-                        // deal with the constructor
-                        for(ConstructorDeclaration cd : compilationUnit.findAll(ConstructorDeclaration.class)) {
-                            Set<String> methodsCallExp = new HashSet<>();
-                            //System.out.println("\t- " + methodDeclaration.getName());
-                            methodDec++;
-                            for(MethodCallExpr mce : cd.findAll(MethodCallExpr.class)){
-                                methodsCallExp.add(mce.toString());
-                            }
-                            methodCall += methodsCallExp.size();
-                        }
-
-                        // now the methods
-                        for(MethodDeclaration methodDeclaration : compilationUnit.findAll(MethodDeclaration.class)){
-                            Set<String> methodsCallExp = new HashSet<>();
-                            //System.out.println("\t- " + methodDeclaration.getName());
-                            methodDec++;
-                            for(MethodCallExpr mce : methodDeclaration.findAll(MethodCallExpr.class)){
-                                methodsCallExp.add(mce.toString());
-                            }
-                            methodCall += methodsCallExp.size();
-                        }
-
                         // return the total method declarations and calls
-                        System.out.println(" complexity: " + (methodDec + methodCall));
+                        System.out.println(" complexity: " + (methodDec[0] + methodCall[0]));
                     }
                 }
             }

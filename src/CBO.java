@@ -2,7 +2,6 @@ import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.*;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
@@ -10,11 +9,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+/** @noinspection rawtypes*/
 public class CBO extends VoidVisitorAdapter{
-    // Weighted Methods per Class: The number of methods in a class
+    // Coupling between Objects - what classes are connected to what
 
-    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem\\taxi-company-later-stage";
-    //final static String PATH = "C:\\Users\\GA\\Downloads\\test";
+    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem";
 
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {
@@ -28,7 +27,7 @@ public class CBO extends VoidVisitorAdapter{
             // Create map to store class names and method calls in that class
             Map<String, Set<String>> allTheClasses = new HashMap<>();
 
-            for(final File entry : folder.listFiles()){
+            for(final File entry : Objects.requireNonNull(folder.listFiles())){
                 // if it's a directory, go into it
                 if (entry.isDirectory()) {
                     analyseFiles(entry);
@@ -49,22 +48,25 @@ public class CBO extends VoidVisitorAdapter{
                         compilationUnit.accept(new VoidVisitorAdapter<Void>(){
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
-                                className[0] = n.getName().toString();
+                                className[0] = n.getNameAsString();
+                                super.visit(n, arg);
+                            }
+
+                            public void visit(ClassOrInterfaceType n, final Void arg) {
+                                references.add(n.getNameAsString());
                                 super.visit(n, arg);
                             }
                         }, null);
 
-                        // TODO: work out which are library classes and exclude them.
-                        for(ClassOrInterfaceType cit : compilationUnit.findAll(ClassOrInterfaceType.class)){
-                              System.out.println(cit);
-                              references.add(cit.getNameAsString());
-                        }
                         // now add the file and the references to it to the map
                         allTheClasses.put(className[0], references);
                     }
                 }
             }
 
+            //TODO: don't count inheritance
+
+            // only want the classes in the project
             List<String> classesInProject = new ArrayList<>(allTheClasses.keySet());
             for (String className: classesInProject) {
                 Set<String> nested = allTheClasses.get(className);
@@ -73,14 +75,13 @@ public class CBO extends VoidVisitorAdapter{
                     allTheClasses.get(nest).add(className);
                 }
             }
+
             handle(allTheClasses);
         }
 
-
-        // TODO: need to actually deal with this...
         public void handle(Map<String, Set<String>> classReferences){
             for (String className : classReferences.keySet()) {
-                Integer classReferenceCount = 0;
+                int classReferenceCount = 0;
                 for (Set<String> classReferenceSet : classReferences.values()) {
                     for (String classReference : classReferenceSet) {
                         if(classReference.contains(className)) {
