@@ -49,13 +49,23 @@ public class CBO extends VoidVisitorAdapter{
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
                                 className[0] = n.getNameAsString();
+                                if(n.toString().contains("implements") || n.toString().contains("extends"))
+                                    System.out.println("THIS CLASS IMPLEMENTS/EXTENDS - " + n.getName());
+                                for(ClassOrInterfaceType cit : n.findAll(ClassOrInterfaceType.class)){
+                                    if(cit.)
+                                    references.add(cit.getNameAsString());
+                                }
                                 super.visit(n, arg);
                             }
 
-                            public void visit(ClassOrInterfaceType n, final Void arg) {
-                                references.add(n.getNameAsString());
-                                super.visit(n, arg);
-                            }
+//                            public void visit(ClassOrInterfaceType n, final Void arg) {
+//                                String check = n.getParentNode().toString();
+//                                if(!check.contains("implements") || !check.contains("extends")){
+//                                    System.out.println("-" + n);
+//                                    references.add(n.getNameAsString());
+//                                }
+//                                super.visit(n, arg);
+//                            }
                         }, null);
 
                         // now add the file and the references to it to the map
@@ -63,8 +73,6 @@ public class CBO extends VoidVisitorAdapter{
                     }
                 }
             }
-
-            //TODO: don't count inheritance
 
             // only want the classes in the project
             List<String> classesInProject = new ArrayList<>(allTheClasses.keySet());
@@ -75,7 +83,6 @@ public class CBO extends VoidVisitorAdapter{
                     allTheClasses.get(nest).add(className);
                 }
             }
-
             handle(allTheClasses);
         }
 

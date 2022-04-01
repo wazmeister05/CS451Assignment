@@ -33,8 +33,9 @@ public class RFC extends VoidVisitorAdapter{
                 } else {
                     // found a java file, parse it.
                     if(entry.toString().contains(".java")) {
-                        final int[] methodDec = {0};
-                        final int[] methodCall = {0};
+                        Set<String> constructorCallExp = new HashSet<>();
+                        Set<String> methodCallExp = new HashSet<>();
+
                         CompilationUnit compilationUnit;
                         try{
                             // try parsing the file
@@ -47,36 +48,30 @@ public class RFC extends VoidVisitorAdapter{
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
                                 // get the name of the class
-                                System.out.print(n.getName());
+                                System.out.print(n.getNameAsString().toUpperCase());
                                 super.visit(n, arg);
                             }
 
                             public void visit(ConstructorDeclaration n, final Void arg) {
-                                Set<String> methodsCallExp = new HashSet<>();
-                                //System.out.println("\t- " + methodDeclaration.getName());
-                                methodDec[0]++;
+                                constructorCallExp.add(n.getNameAsString());
                                 for(MethodCallExpr mce : n.findAll(MethodCallExpr.class)){
-                                    methodsCallExp.add(mce.toString());
+                                    methodCallExp.add(mce.getNameAsString());
                                 }
-                                methodCall[0] += methodsCallExp.size();
                                 super.visit(n, arg);
                             }
 
                             public void visit(MethodDeclaration n, final Void arg) {
-                                Set<String> methodsCallExp = new HashSet<>();
-                                //System.out.println("\t- " + methodDeclaration.getName());
-                                methodDec[0]++;
+                                constructorCallExp.add(n.getNameAsString());
                                 for(MethodCallExpr mce : n.findAll(MethodCallExpr.class)){
-                                    methodsCallExp.add(mce.toString());
+                                    methodCallExp.add(mce.getNameAsString());
                                 }
-                                methodCall[0] += methodsCallExp.size();
                                 super.visit(n, arg);
                             }
 
                         }, null);
 
                         // return the total method declarations and calls
-                        System.out.println(" complexity: " + (methodDec[0] + methodCall[0]));
+                        System.out.println(" complexity: " + (methodCallExp.size() + constructorCallExp.size()));
                     }
                 }
             }
