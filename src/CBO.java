@@ -49,11 +49,10 @@ public class CBO extends VoidVisitorAdapter{
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
                                 className[0] = n.getNameAsString();
-                                if(n.toString().contains("implements") || n.toString().contains("extends"))
-                                    System.out.println("THIS CLASS IMPLEMENTS/EXTENDS - " + n.getName());
                                 for(ClassOrInterfaceType cit : n.findAll(ClassOrInterfaceType.class)){
-                                    if(cit.)
-                                    references.add(cit.getNameAsString());
+                                    if(!n.getExtendedTypes().contains(cit)) {
+                                        references.add(cit.getNameAsString());
+                                    }
                                 }
                                 super.visit(n, arg);
                             }
