@@ -4,6 +4,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
@@ -15,7 +17,7 @@ import java.util.*;
 public class LCOM extends VoidVisitorAdapter {
     // Lack of Cohesion of Methods - the degree to which methods and fields within a class are related to one another
 
-    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem\\taxi-company-later-stage";
+    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem\\weblog-analyzer";
 
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {
@@ -24,7 +26,6 @@ public class LCOM extends VoidVisitorAdapter {
 
     private static class MethodModifier {
         public void analyseFiles(final File folder) throws FileNotFoundException {
-
             for(final File entry : Objects.requireNonNull(folder.listFiles())){
                 // if it's a directory, go into it
                 if (entry.isDirectory()) {
@@ -33,7 +34,6 @@ public class LCOM extends VoidVisitorAdapter {
                     // otherwise just read each file
                     if(entry.toString().contains(".java"))
                     {
-                        int x = 1;
                         CompilationUnit compilationUnit;
                         try {
                             compilationUnit = StaticJavaParser.parse(entry);
@@ -41,43 +41,34 @@ public class LCOM extends VoidVisitorAdapter {
                             continue;
                         }
 
-                        int[] fieldCount = {0};
-                        int[] useCount = {0};
-
                         compilationUnit.accept(new VoidVisitorAdapter<Void>(){
                             @Override
-                            public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
-                                System.out.println(n.getNameAsString().toUpperCase());
+                            public void visit(ClassOrInterfaceDeclaration n, final Void arg){
+                                System.out.print(n.getNameAsString() + ": ");
+
+                                Map<String, Integer> measure = new HashMap<>();
+                                ArrayList<String> fields = new ArrayList<>();
+
+                                for(FieldDeclaration fd : n.findAll(FieldDeclaration.class)){
+                                    fields.add(fd.toString());
+                                }
+
+                                for(MethodDeclaration md : n.findAll(MethodDeclaration.class)){
+                                    int x = 0;
+                                    for(NameExpr ne : md.findAll(NameExpr.class)){
+                                        if(fields.contains(ne.getNameAsString())){
+                                            x++;
+                                        }
+                                    }
+                                   measure.put(md.getNameAsString(), x);
+                                }
+
+                                System.out.println(measure);
                                 super.visit(n, arg);
                             }
-
-                            public void visit(NameExpr n, final Void arg){
-                                System.out.println("NameExpr " + n.getName().toString());
-                                useCount[0]++;
-                                super.visit(n, arg);
-                            }
-
-                            public void visit(FieldDeclaration n, final Void arg) {
-                                System.out.println("FieldDec " + n.getVariables());
-                                fieldCount[0]++;
-                                super.visit(n, arg);
-                            }
-
                         }, null);
-
-                        int methodAndFieldSum = fieldCount[0] + useCount[0];
-
-                        //System.out.println(" complexity: " + (1 - (x / methodAndFieldSum)));
-                        System.out.println(" complexity: " + (methodAndFieldSum));
-                        System.out.println();
                     }
                 }
-                    /*
-                    For each field in the class, you count the methods that reference it,
-                    and then you add all of those up across all fields.
-                    You then divide that by the count of methods times the count of fields, and you subtract the result from one.
-
-                     */
             }
         }
     }

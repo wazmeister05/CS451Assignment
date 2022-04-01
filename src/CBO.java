@@ -1,7 +1,9 @@
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.expr.CastExpr;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
@@ -46,26 +48,25 @@ public class CBO extends VoidVisitorAdapter{
                         }
                         // first, get the class name
                         compilationUnit.accept(new VoidVisitorAdapter<Void>(){
+                            NodeList<ClassOrInterfaceType> extended = new NodeList<>();
+
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
                                 className[0] = n.getNameAsString();
-                                for(ClassOrInterfaceType cit : n.findAll(ClassOrInterfaceType.class)){
-                                    if(!n.getExtendedTypes().contains(cit)) {
-                                        references.add(cit.getNameAsString());
-                                    }
-                                }
+                                extended = n.getExtendedTypes();
                                 super.visit(n, arg);
                             }
 
-//                            public void visit(ClassOrInterfaceType n, final Void arg) {
-//                                String check = n.getParentNode().toString();
-//                                if(!check.contains("implements") || !check.contains("extends")){
-//                                    System.out.println("-" + n);
-//                                    references.add(n.getNameAsString());
-//                                }
-//                                super.visit(n, arg);
-//                            }
+                            public void visit(ClassOrInterfaceType n, final Void arg) {
+                                if(!extended.contains(n)){
+                                    references.add(n.getNameAsString());
+                                }
+                                super.visit(n, arg);
+                            }
                         }, null);
+
+
+                        //TODO: Classes that are cast?
 
                         // now add the file and the references to it to the map
                         allTheClasses.put(className[0], references);
@@ -82,6 +83,7 @@ public class CBO extends VoidVisitorAdapter{
                     allTheClasses.get(nest).add(className);
                 }
             }
+            //System.out.println(allTheClasses);
             handle(allTheClasses);
         }
 
