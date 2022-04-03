@@ -18,7 +18,7 @@ import java.util.HashMap;
 public class LCOM extends VoidVisitorAdapter {
     // Lack of Cohesion of Methods - the degree to which methods and fields within a class are related to one another
 
-    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem";
+    final static String PATH = "files/";
 
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {

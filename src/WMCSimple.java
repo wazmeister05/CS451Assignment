@@ -13,7 +13,7 @@ import java.util.Objects;
 public class WMCSimple extends VoidVisitorAdapter{
     // Weighted Methods per Class: The number of methods in a class
 
-    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem";
+    final static String PATH = "files/";
 
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {

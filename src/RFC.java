@@ -17,7 +17,7 @@ import java.util.Set;
 public class RFC extends VoidVisitorAdapter{
     // Response For a Class: number of methods and method calls in a class
 
-    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem";
+    final static String PATH = "files/";
 
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {
@@ -48,7 +48,7 @@ public class RFC extends VoidVisitorAdapter{
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
                                 // get the name of the class
-                                System.out.print(n.getNameAsString().toUpperCase());
+                                System.out.print(n.getNameAsString());
                                 super.visit(n, arg);
                             }
 

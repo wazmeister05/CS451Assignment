@@ -14,7 +14,7 @@ import java.util.*;
 public class CBO extends VoidVisitorAdapter{
     // Coupling between Objects - what classes are connected to what
 
-    final static String PATH = "C:\\Users\\GA\\Downloads\\CS451TestSystem";
+    final static String PATH = "files/";
 
     // Main, get the path of the files and call the Method Modifier
     public static void main(String[] args) throws Exception {
