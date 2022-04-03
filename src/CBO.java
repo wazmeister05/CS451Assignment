@@ -48,24 +48,23 @@ public class CBO extends VoidVisitorAdapter{
                         // first, get the class name
                         compilationUnit.accept(new VoidVisitorAdapter<Void>(){
                             NodeList<ClassOrInterfaceType> extended = new NodeList<>();
+                            NodeList<ClassOrInterfaceType> implemented = new NodeList<>();
 
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {
                                 className[0] = n.getNameAsString();
                                 extended = n.getExtendedTypes();
+                                implemented = n.getImplementedTypes();
                                 super.visit(n, arg);
                             }
 
                             public void visit(ClassOrInterfaceType n, final Void arg) {
-                                if(!extended.contains(n) && !n.getNameAsString().equals(className[0])){
+                                if((!extended.contains(n) && !implemented.contains(n)) && !n.getNameAsString().equals(className[0])){
                                     references.add(n.getNameAsString());
                                 }
                                 super.visit(n, arg);
                             }
                         }, null);
-
-
-                        //TODO: Classes that are cast?
 
                         // now add the file and the references to it to the map
                         allTheClasses.put(className[0], references);
