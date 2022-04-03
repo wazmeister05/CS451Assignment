@@ -42,6 +42,7 @@ public class LCOM extends VoidVisitorAdapter {
                             continue;
                         }
 
+                        // more visitors, details within
                         compilationUnit.accept(new VoidVisitorAdapter<Void>(){
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg){
@@ -50,6 +51,7 @@ public class LCOM extends VoidVisitorAdapter {
                                 HashMap<String, Set<String>> measure = new HashMap<>();
                                 Set<String> fields = new HashSet<>();
 
+                                // gather the fields available in the class
                                 for(FieldDeclaration fd : n.findAll(FieldDeclaration.class)){
                                     NodeList nodes = fd.getVariables();
                                     for(Object v : nodes){
@@ -57,6 +59,7 @@ public class LCOM extends VoidVisitorAdapter {
                                     }
                                 }
 
+                                // gather non-abstract methods and the fields they reference, if any
                                 for(MethodDeclaration md : n.findAll(MethodDeclaration.class)){
                                     if(!md.getModifiers().contains(Modifier.abstractModifier())) {
                                         Set<String> counted = new HashSet<>();
@@ -70,7 +73,6 @@ public class LCOM extends VoidVisitorAdapter {
                                 }
 
                                 System.out.println(calculatePerMethod(measure));
-
                                 super.visit(n, arg);
                             }
                         }, null);
@@ -79,19 +81,21 @@ public class LCOM extends VoidVisitorAdapter {
             }
         }
 
+
         public int calculatePerMethod(HashMap<String, Set<String>> measure){
-
+            // clone measure for manipulation
             HashMap<String, Set<String>> clone = (HashMap<String, Set<String>>) measure.clone();
-
             int P = 0;
             int Q = 0;
             int count = 0;
 
+            // Loops. For each entry in measure, get the name of the method and the fields it references
             for(Map.Entry entry : measure.entrySet()){
                 String methodName = entry.getKey().toString();
                 Set<String> fields = measure.get(methodName);
                 clone.remove(methodName, fields);
 
+                // for each of the references in clone, try and match the name of the given string.
                 for(String key : clone.keySet()) {
                     boolean match = false;
                     for(String str : fields) {
@@ -100,6 +104,8 @@ public class LCOM extends VoidVisitorAdapter {
                             match = true;
                         }
                     }
+
+                    // according to the metric online - if there is a shared variable between two methods ++Q, otherwise ++P
                     if(match){
                         Q++;
                     }
@@ -109,6 +115,8 @@ public class LCOM extends VoidVisitorAdapter {
                 }
 
             }
+
+            // if P is greater than Q, change count, otherwise return 0.
             if(P > Q){
                 count = P - Q;
             }

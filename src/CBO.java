@@ -47,6 +47,8 @@ public class CBO extends VoidVisitorAdapter{
                         }
                         // first, get the class name
                         compilationUnit.accept(new VoidVisitorAdapter<Void>(){
+
+                            // these will be used to check for inheritance.
                             NodeList<ClassOrInterfaceType> extended = new NodeList<>();
                             NodeList<ClassOrInterfaceType> implemented = new NodeList<>();
 
@@ -58,6 +60,7 @@ public class CBO extends VoidVisitorAdapter{
                                 super.visit(n, arg);
                             }
 
+                            // if the class being visited is neither extended or inherited and isn't called the name of the class we're looking at, add it to reference
                             public void visit(ClassOrInterfaceType n, final Void arg) {
                                 if((!extended.contains(n) && !implemented.contains(n)) && !n.getNameAsString().equals(className[0])){
                                     references.add(n.getNameAsString());
@@ -66,7 +69,7 @@ public class CBO extends VoidVisitorAdapter{
                             }
                         }, null);
 
-                        // now add the file and the references to it to the map
+                        // now add the classname and the references to it to the map
                         allTheClasses.put(className[0], references);
                     }
                 }
@@ -85,6 +88,7 @@ public class CBO extends VoidVisitorAdapter{
             handle(allTheClasses);
         }
 
+        // deal with the references - if there is a reference in the class to another class, increment that value before returning it
         public void handle(Map<String, Set<String>> classReferences){
             for (String className : classReferences.keySet()) {
                 int classReferenceCount = 0;

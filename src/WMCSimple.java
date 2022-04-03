@@ -39,7 +39,7 @@ public class WMCSimple extends VoidVisitorAdapter{
                         }catch(ParseProblemException p){
                             continue;
                         }
-                        // get the class name and the number of methods
+                        // get the class name and the number of methods with visitors
                         compilationUnit.accept(new VoidVisitorAdapter<Void>(){
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {

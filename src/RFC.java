@@ -43,7 +43,7 @@ public class RFC extends VoidVisitorAdapter{
                         }catch(ParseProblemException p){
                             continue;
                         }
-                        // first return the class name
+                        // use visitors to first return the class name then to retrieve details from constructors and methods
                         compilationUnit.accept(new VoidVisitorAdapter<Void>(){
                             @Override
                             public void visit(ClassOrInterfaceDeclaration n, final Void arg) {

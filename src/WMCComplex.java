@@ -39,7 +39,6 @@ public class WMCComplex extends VoidVisitorAdapter{
                         try {
                             compilationUnit = StaticJavaParser.parse(entry);
                         }catch(ParseProblemException p){
-                            // currently just ignores any files that aren't edited to change the package import
                             continue;
                         }
 
@@ -50,6 +49,7 @@ public class WMCComplex extends VoidVisitorAdapter{
                                 super.visit(n, arg);
                             }
 
+                            // use visitors on the constructor and methods
                             public void visit(ConstructorDeclaration n, final Void arg){
                                 int branches = 1;
                                 for(WhileStmt whileStmt : n.findAll(WhileStmt.class)){
@@ -81,7 +81,8 @@ public class WMCComplex extends VoidVisitorAdapter{
                                     branches++;
                                 }
                                 for(ForEachStmt forEachStmt : n.findAll(ForEachStmt.class)){
-                                    // check if the for-each statement has conjunctions
+                                    // check if the for-each statement has conjunctions. Differs from above as I don't think you'd
+                                    // expect more than one in a line
                                     if(forEachStmt.toString().contains("&&") || forEachStmt.toString().contains("||")){
                                         branches++;
                                     }
@@ -102,7 +103,8 @@ public class WMCComplex extends VoidVisitorAdapter{
                                     branches++;
                                 }
                                 for(SwitchStmt switchStmt : n.findAll(SwitchStmt.class)){
-                                    // check if the switch statement has conjunctions
+                                    // check if the for-each statement has conjunctions. Differs from above as I don't think you'd
+                                    // expect more than one in a line
                                     if(switchStmt.toString().contains("&&") || switchStmt.toString().contains("||")){
                                         branches++;
                                     }
@@ -155,7 +157,8 @@ public class WMCComplex extends VoidVisitorAdapter{
                                     }
                                 }
                                 for(ForEachStmt forEachStmt : n.findAll(ForEachStmt.class)){
-                                    // check if the for-each statement has conjunctions
+                                    // check if the for-each statement has conjunctions. Differs from above as I don't think you'd
+                                    // expect more than one in a line
                                     if(forEachStmt.toString().contains("&&") || forEachStmt.toString().contains("||")){
                                         branches++;
                                     }
@@ -176,7 +179,8 @@ public class WMCComplex extends VoidVisitorAdapter{
                                     branches++;
                                 }
                                 for(SwitchStmt switchStmt : n.findAll(SwitchStmt.class)){
-                                    // check if the switch statement has conjunctions
+                                    // check if the for-each statement has conjunctions. Differs from above as I don't think you'd
+                                    // expect more than one in a line
                                     if(switchStmt.toString().contains("&&") || switchStmt.toString().contains("||")){
                                         branches++;
                                     }
