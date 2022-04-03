@@ -59,6 +59,24 @@ public class WMCComplex extends VoidVisitorAdapter{
                                     }
                                     branches++;
                                 }
+
+                                //todo this
+                                /*
+
+
+                                    int fromIndex = 0;
+                                    while ((fromIndex = ifStmt.getCondition().toString().indexOf("&&", fromIndex)) != -1 ){
+                                        complexity++;
+                                        fromIndex++;
+                                    }
+                                    fromIndex = 0;
+                                    while ((fromIndex = ifStmt.getCondition().toString().indexOf("||", fromIndex)) != -1 ){
+                                        complexity++;
+                                        fromIndex++;
+                                    }
+
+
+                                 */
                                 for(DoStmt doStmt : n.findAll(DoStmt.class)){
                                     // check if the do while statement has conjunctions
                                     if(doStmt.toString().contains("&&") || doStmt.toString().contains("||")){

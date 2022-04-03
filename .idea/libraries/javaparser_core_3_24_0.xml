@@ -2,6 +2,7 @@
   <library name="javaparser-core-3.24.0">
     <CLASSES>
       <root url="jar://$USER_HOME$/Downloads/javaparser-core-3.24.0.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/poi-3.17.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

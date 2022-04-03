@@ -58,7 +58,7 @@ public class CBO extends VoidVisitorAdapter{
                             }
 
                             public void visit(ClassOrInterfaceType n, final Void arg) {
-                                if(!extended.contains(n)){
+                                if(!extended.contains(n) && !n.getNameAsString().equals(className[0])){
                                     references.add(n.getNameAsString());
                                 }
                                 super.visit(n, arg);
