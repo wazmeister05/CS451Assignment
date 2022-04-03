@@ -53,34 +53,30 @@ public class WMCComplex extends VoidVisitorAdapter{
                             public void visit(ConstructorDeclaration n, final Void arg){
                                 int branches = 1;
                                 for(WhileStmt whileStmt : n.findAll(WhileStmt.class)){
+                                    int index = 0;
                                     // check if the while statement has conjunctions
-                                    if(whileStmt.toString().contains("&&") || whileStmt.toString().contains("||")){
+                                    while((index = whileStmt.getCondition().toString().indexOf("&&", index)) != -1) {
                                         branches++;
+                                        index++;
+                                    }
+                                    index = 0;
+                                    while((index = whileStmt.getCondition().toString().indexOf("||", index)) != -1) {
+                                        branches++;
+                                        index++;
                                     }
                                     branches++;
                                 }
-
-                                //todo this
-                                /*
-
-
-                                    int fromIndex = 0;
-                                    while ((fromIndex = ifStmt.getCondition().toString().indexOf("&&", fromIndex)) != -1 ){
-                                        complexity++;
-                                        fromIndex++;
-                                    }
-                                    fromIndex = 0;
-                                    while ((fromIndex = ifStmt.getCondition().toString().indexOf("||", fromIndex)) != -1 ){
-                                        complexity++;
-                                        fromIndex++;
-                                    }
-
-
-                                 */
                                 for(DoStmt doStmt : n.findAll(DoStmt.class)){
+                                    int index = 0;
                                     // check if the do while statement has conjunctions
-                                    if(doStmt.toString().contains("&&") || doStmt.toString().contains("||")){
+                                    while((index = doStmt.getCondition().toString().indexOf("&&", index)) != -1) {
                                         branches++;
+                                        index++;
+                                    }
+                                    index = 0;
+                                    while((index = doStmt.getCondition().toString().indexOf("||", index)) != -1) {
+                                        branches++;
+                                        index++;
                                     }
                                     branches++;
                                 }
@@ -92,9 +88,16 @@ public class WMCComplex extends VoidVisitorAdapter{
                                     branches++;
                                 }
                                 for(ForStmt forStmt : n.findAll(ForStmt.class)){
+                                    int index = 0;
                                     // check if the for statement has conjunctions
-                                    if(forStmt.toString().contains("&&") || forStmt.toString().contains("||")){
+                                    while((index = forStmt.getCompare().toString().indexOf("&&", index)) != -1) {
                                         branches++;
+                                        index++;
+                                    }
+                                    index = 0;
+                                    while((index = forStmt.getCompare().toString().indexOf("||", index)) != -1) {
+                                        branches++;
+                                        index++;
                                     }
                                     branches++;
                                 }
@@ -106,9 +109,16 @@ public class WMCComplex extends VoidVisitorAdapter{
                                     branches++;
                                 }
                                 for(IfStmt ifStmt : n.findAll(IfStmt.class)) {
+                                    int index = 0;
                                     // check if the if statement has conjunctions
-                                    if(ifStmt.toString().contains("&&") || ifStmt.toString().contains("||")){
+                                    while((index = ifStmt.getCondition().toString().indexOf("&&", index)) != -1) {
                                         branches++;
+                                        index++;
+                                    }
+                                    index = 0;
+                                    while((index = ifStmt.getCondition().toString().indexOf("||", index)) != -1) {
+                                        branches++;
+                                        index++;
                                     }
                                     branches++;
                                 }
@@ -119,18 +129,30 @@ public class WMCComplex extends VoidVisitorAdapter{
                             public void visit(MethodDeclaration n, final Void arg){
                                 int branches = 1;
                                 for(WhileStmt whileStmt : n.findAll(WhileStmt.class)){
+                                    int index = 0;
                                     // check if the while statement has conjunctions
-                                    if(whileStmt.toString().contains("&&") || whileStmt.toString().contains("||")){
+                                    while((index = whileStmt.getCondition().toString().indexOf("&&", index)) != -1) {
                                         branches++;
+                                        index++;
                                     }
-                                    branches++;
+                                    index = 0;
+                                    while((index = whileStmt.getCondition().toString().indexOf("||", index)) != -1) {
+                                        branches++;
+                                        index++;
+                                    }
                                 }
                                 for(DoStmt doStmt : n.findAll(DoStmt.class)){
+                                    int index = 0;
                                     // check if the do while statement has conjunctions
-                                    if(doStmt.toString().contains("&&") || doStmt.toString().contains("||")){
+                                    while((index = doStmt.getCondition().toString().indexOf("&&", index)) != -1) {
                                         branches++;
+                                        index++;
                                     }
-                                    branches++;
+                                    index = 0;
+                                    while((index = doStmt.getCondition().toString().indexOf("||", index)) != -1) {
+                                        branches++;
+                                        index++;
+                                    }
                                 }
                                 for(ForEachStmt forEachStmt : n.findAll(ForEachStmt.class)){
                                     // check if the for-each statement has conjunctions
@@ -140,9 +162,16 @@ public class WMCComplex extends VoidVisitorAdapter{
                                     branches++;
                                 }
                                 for(ForStmt forStmt : n.findAll(ForStmt.class)){
+                                    int index = 0;
                                     // check if the for statement has conjunctions
-                                    if(forStmt.toString().contains("&&") || forStmt.toString().contains("||")){
+                                    while((index = forStmt.getCompare().toString().indexOf("&&", index)) != -1) {
                                         branches++;
+                                        index++;
+                                    }
+                                    index = 0;
+                                    while((index = forStmt.getCompare().toString().indexOf("||", index)) != -1) {
+                                        branches++;
+                                        index++;
                                     }
                                     branches++;
                                 }
@@ -154,9 +183,16 @@ public class WMCComplex extends VoidVisitorAdapter{
                                     branches++;
                                 }
                                 for(IfStmt ifStmt : n.findAll(IfStmt.class)) {
+                                    int index = 0;
                                     // check if the if statement has conjunctions
-                                    if(ifStmt.toString().contains("&&") || ifStmt.toString().contains("||")){
+                                    while((index = ifStmt.getCondition().toString().indexOf("&&", index)) != -1) {
                                         branches++;
+                                        index++;
+                                    }
+                                    index = 0;
+                                    while((index = ifStmt.getCondition().toString().indexOf("||", index)) != -1) {
+                                        branches++;
+                                        index++;
                                     }
                                     branches++;
                                 }
